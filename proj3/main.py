@@ -1,16 +1,16 @@
 from fastapi import FastAPI, Request, status
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
 from .models import Base
 from .database import engine
-from .router import auth, todos, admin, user
+from .routers import auth, todos, admin, users
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
 app = FastAPI()
 
-
 Base.metadata.create_all(bind=engine)
 
-app.mount("/static", StaticFiles(directory="proj3/templates"), name="static")
+app.mount("/static", StaticFiles(directory="proj3/static"), name="static")
+
 
 @app.get("/")
 def test(request: Request):
@@ -21,7 +21,8 @@ def test(request: Request):
 def health_check():
     return {'status': 'Healthy'}
 
+
 app.include_router(auth.router)
 app.include_router(todos.router)
 app.include_router(admin.router)
-app.include_router(user.router)
+app.include_router(users.router)
